@@ -183,9 +183,8 @@ int Verifica_grau_vertices(Grafo G1,Grafo G2){
     
     
     for(vertex v = 0 ; v<G1->V; v++){
-        for(link p = G1->adj[v]; p!=NULL; p = p-> prox){
+        for(link p = G1->adj[v]; p!=NULL; p = p-> prox)
             a+=1;
-        }
         grau1[v] = a;
         a=0;
     }
@@ -193,9 +192,8 @@ int Verifica_grau_vertices(Grafo G1,Grafo G2){
 
     for(vertex v = 0 ; v<G2->V; v++){
       printf("|%2d|->",v);
-      for(link p = G2->adj[v]; p!=NULL; p = p-> prox){
+      for(link p = G2->adj[v]; p!=NULL; p = p-> prox)
             a+=1;
-      }
       grau2[v] = a;
       printf("%2d | %2d\n",grau1[v],grau2[v]);
       a=0;
@@ -221,11 +219,11 @@ int Verifica_grau_vertices(Grafo G1,Grafo G2){
 
     for(int i = 0; i<G1->V;i++){
         if(grau1[i]!=-1){
-            printf("\n>>>Não eh isomorfo\n");
+            printf("\nNao eh isomorfo\n");
             return 0;
         }
     }
-    printf("\n>>>Eh isomorfo\n");
+    printf("\nEh isomorfo\n");
     return 1;
     
 }
@@ -243,37 +241,53 @@ int Verfica_desconexo(Grafo G1,Grafo G2){
     int a;
     int grau1[G1->V];
     int grau2[G2->V];
-    for(vertex v = 0 ; v<G1->V; v++){
+
+    int verific1;
+    int verific2;
+
+    for(vertex v = 0 ; v < G1->V ; v++) {
         a=0;
-        for(link p = G1->adj[v]; p!=NULL; p = p-> prox){
+        for(link p = G1->adj[v]; p!=NULL; p = p-> prox)
             a+=1;
-        }
         grau1[v] = a;
 
     }
-    if(a == 0){ 
-        printf("GRAFO -> 1, eh desconexo\n");
-        return 0;
-    }
-    else{
-        printf("GRAFO -> 1, não eh desconexo\n");
+
+    for(vertex v = 0 ; v < G1->V ; v++){
         a = 0;
-        for(vertex v = 0 ; v<G1->V; v++){
-            a=0;
-            for(link p = G1->adj[v]; p!=NULL; p = p-> prox){
-                a+=1;
+        for(link p = G2->adj[v]; p!=NULL; p = p-> prox)
+            a+=1;
+        grau2[v] = a;
+    }
+
+    for(int i = 0; i < G1->V; i++){
+        if(grau1[i] == 0)
+            verific1 = 1;
+        if(grau2[i] == 0)
+            verific2 = 1;
+    }
+    for(int i = 0; i < G1->V; i++){
+        if((verific1 == 1)&&(verific2 == 1)){ 
+                printf("Grafos são desconexos desconexo\n");
+                return 0;
             }
-            grau1[v] = a;
+        if((verific1 == 1)||(verific2 == 1)){
+            if((verific1 == 1)){
+            printf("GRAFO -> 1,eh desconexo\n");
+            return 0;
+            }
+            if((verific2 == 1)){
+            printf("GRAFO -> 2,eh desconexo\n");
+                return 0;
+            }
         }
-        if(a==0){ 
-            printf("GRAFO -> 2 , eh desconexo\n");
+        else{
+            printf("Nenhum grafo eh desconexo\n");
             return 1;
         }
-        else{ 
-            printf("GRAFO -> 2, não eh desconexo\n");
-            return 0;
-        }
-    }
+      }
+
+
 }
 
 
@@ -288,39 +302,26 @@ int Verfica_desconexo(Grafo G1,Grafo G2){
  * return return 0 ou 1 com boleano para True e false, respectivamente.
  */
 int Verfica_livre_de_circuitos(Grafo G1,Grafo G2){
-    int a;
-    int grau1[G1->V];
-    int grau2[G2->V];
-    for(vertex v = 0 ; v<G1->V; v++){
-        a=0;
-        for(link p = G1->adj[v]; p!=NULL; p = p-> prox){
-            a+=1;
-        }
-        grau1[v] = a;
 
+    if((G1->A <= (G1->V - 1)) && ((G2->A <= (G2->V - 1)))){
+        printf("Grafos livre de circuitos\n");
+        return 1;
     }
-    if(a < 2){ 
-        printf("GRAFO -> 1, eh livre de circuitos\n");
-        return 0;
-    }
-    else{
-        printf("GRAFO -> 1, não eh livre de circuitos\n");
-        a = 0;
-        for(vertex v = 0 ; v<G1->V; v++){
-            a=0;
-            for(link p = G1->adj[v]; p!=NULL; p = p-> prox){
-                a+=1;
-            }
-            grau1[v] = a;
-        }
-        if(a < 2){ 
-            printf("GRAFO -> 2 , eh livre de circuitos\n");
-            return 1;
-        }
-        else{ 
-            printf("GRAFO -> 2, não eh livre de circuitos\n");
+
+    if((G1->A <= (G1->V - 1)) || ((G2->A <= (G2->V - 1)))){
+        if(G1->A <= (G1->V - 1)){
+            printf("Grafo 1 eh livre de circuitos\n");
             return 0;
         }
+        if(G2->A <= (G2->V - 1)){
+            printf("Grafo 2 eh livre de circuitos\n");
+            return 0;
+        } 
+    } 
+    
+    else {
+        printf("Nenhum grafo eh livre de circuitos\n");
+        return 0;
     }
 }
 
@@ -350,11 +351,10 @@ int main(){
     printf("\n>>>>GRAUS DE CADA VERTICE\n\n");
     Verifica_grau_vertices(G1,G2);
 
-    printf("\n>>>DESCONEXO OU NÃO\n");
+    printf("\n>>>DESCONEXO OU NAO\n");
     Verfica_desconexo(G1,G2);
 
-
-    printf("\n>>>EH LIVRE DE CIRCUITOS OU NÃO\n");
+    printf("\n>>>EH LIVRE DE CIRCUITOS OU NAO\n");
     Verfica_livre_de_circuitos(G1,G2);
 
 }
