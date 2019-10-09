@@ -17,7 +17,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
-#include<time.h>
+#include <time.h>
 #include <locale.h>
 
 #define vertex int
@@ -97,7 +97,7 @@ void Grafo_insere(Grafo G, vertex v, vertex w){
 /**
  * @brief      Exibe o grafo em lista de adjacência
  *
- * @param[     G   Grafo a ser exibido.
+ * @param  G   Grafo a ser exibido.
  */
 void Mostra_Grafo(Grafo G){
     for(vertex v = 0 ; v<G->V; v++){
@@ -145,8 +145,11 @@ Grafo Gera_Grafo_Random(int num_vertices){
  */
 int Verifica_num_vertices(Grafo G1, Grafo G2){
     printf("G1-> %d||G2-> %d\n",G1->V,G2->V);
-    if(G1->V == G2->V)
+    if(G1->V == G2->V){
+        printf("--Possuem a mesma quantidade de vertices\n");
         return 1;
+    }
+    printf("--Nao possuem a mesma quantidade de vertices\n");
     return 0;
 }
 
@@ -161,8 +164,11 @@ int Verifica_num_vertices(Grafo G1, Grafo G2){
  */
 int Verifica_arestas(Grafo G1, Grafo G2){
     printf("G1-> %d||G2-> %d\n",G1->A,G2->A);
-    if(G1->A == G2->A)
+    if(G1->A == G2->A){
+        printf("--Possuem a mesma quantidade de arestas\n");
         return 1;
+    }
+    printf("--Nao possuem a mesma quantidade de arestas\n");
     return 0;
 }
 
@@ -190,6 +196,9 @@ int Verifica_grau_vertices(Grafo G1,Grafo G2){
     }
     a=0;
 
+        
+    printf(" V-> Vertice\nG1-> Graus grafo 1\nG2-> Graus grafo 2\n");
+    printf("__V____G1___G2_\n");
     for(vertex v = 0 ; v<G2->V; v++){
       printf("|%2d|->",v);
       for(link p = G2->adj[v]; p!=NULL; p = p-> prox)
@@ -199,9 +208,7 @@ int Verifica_grau_vertices(Grafo G1,Grafo G2){
       a=0;
     }
 
-    
-    printf("\n V-> Vertice\nG1-> Graus grafo 1\nG2-> Graus grafo 2\n");
-    printf("__V____G1___G2_\n");
+    printf("\n");
     for(int i = 0 ; i < G1->V ; i++){
       for(int j = 0; j< G1->V ; j++){
         if(grau2[j]!= -1 ){
@@ -219,11 +226,11 @@ int Verifica_grau_vertices(Grafo G1,Grafo G2){
 
     for(int i = 0; i<G1->V;i++){
         if(grau1[i]!=-1){
-            printf("\nNao eh isomorfo\n");
+            printf("--Nao possuem os mesmos graus\n");
             return 0;
         }
     }
-    printf("\nEh isomorfo\n");
+    printf("\n--Possuem os mesmos graus\n");
     return 1;
     
 }
@@ -268,33 +275,30 @@ int Verfica_desconexo(Grafo G1,Grafo G2){
     }
     for(int i = 0; i < G1->V; i++){
         if((verific1 == 1)&&(verific2 == 1)){ 
-                printf("Grafos são desconexos desconexo\n");
+                printf("--Grafos são desconexos desconexo\n");
                 return 0;
             }
         if((verific1 == 1)||(verific2 == 1)){
             if((verific1 == 1)){
-            printf("GRAFO -> 1,eh desconexo\n");
+            printf("--GRAFO -> 1, eh desconexo\n");
             return 0;
             }
             if((verific2 == 1)){
-            printf("GRAFO -> 2,eh desconexo\n");
+            printf("--Grafo 2 eh desconexo\n");
                 return 0;
             }
         }
         else{
-            printf("Nenhum grafo eh desconexo\n");
+            printf("--Nenhum grafo eh desconexo\n");
             return 1;
         }
       }
-
-
 }
 
 
 /**
- * @brief      Verifica se há vértices de grau < 2, pois a partir 
- *             do teorema, grafos com grau >= 2 deve possui um
- *             circuito.
+ * @brief      Verifica se há vértices de grau <= vertices - 1, de
+ *             acordo com o teorema.
  * 
  * @param      G1 Grafo para verificação.
  * @param      G2 Grafo para verificação.
@@ -303,58 +307,77 @@ int Verfica_desconexo(Grafo G1,Grafo G2){
  */
 int Verfica_livre_de_circuitos(Grafo G1,Grafo G2){
 
-    if((G1->A <= (G1->V - 1)) && ((G2->A <= (G2->V - 1)))){
-        printf("Grafos livre de circuitos\n");
+    int verific1;
+    int verific2;
+
+    if(G1->A <= (G1->V - 1))
+        verific1 = 1;
+    if(G2->A <= (G2->V - 1))
+        verific2 = 1;
+
+    if((verific1 == 1) && (verific2 == 1)){
+        printf("--Grafos livre de circuitos");
         return 1;
     }
 
-    if((G1->A <= (G1->V - 1)) || ((G2->A <= (G2->V - 1)))){
-        if(G1->A <= (G1->V - 1)){
-            printf("Grafo 1 eh livre de circuitos\n");
+    if((verific1 == 1) || (verific2 == 1)){
+        if(verific1 == 1){
+            printf("--Grafo 1 eh livre de circuitos\n");
             return 0;
         }
-        if(G2->A <= (G2->V - 1)){
-            printf("Grafo 2 eh livre de circuitos\n");
+       if(verific2 == 1){
+            printf("--Grafo 2 eh livre de circuitos\n");
             return 0;
         } 
     } 
     
     else {
-        printf("Nenhum grafo eh livre de circuitos\n");
+        printf("--Nenhum grafo eh livre de circuitos\n");
         return 0;
     }
 }
 
 
-
-
-
 int main(){
+    while(1){
     setlocale(LC_ALL, "portuguese");
 
     srand(time(NULL));
     
     struct grafo *G1,*G2;
-    G1 = Gera_Grafo_Random(5);
-    G2 = Gera_Grafo_Random(5);
+    G1 = Gera_Grafo_Random(rand()%5+1);
+    G2 = Gera_Grafo_Random(rand()%5+1);
     
-    
-    printf("\n________________GRAFO -> 1________________________\n");
+    printf("\n\n\n\n");
+    printf("________________GRAFO -> 1________________________\n");
     Mostra_Grafo(G1);
-    printf("\n________________GRAFO -> 2________________________\n");
+    printf("________________GRAFO -> 2________________________\n");
     Mostra_Grafo(G2);
 
-    printf("\n");
-    Verifica_num_vertices(G1,G2);
-    Verifica_arestas(G1,G2);
+    printf("\n>>>NUMERO DE VERTICES DE CADA GRAFO\n");
+    int teste_1 = Verifica_num_vertices(G1,G2);
 
-    printf("\n>>>>GRAUS DE CADA VERTICE\n\n");
-    Verifica_grau_vertices(G1,G2);
+    printf("\n>>>SOMA DOS GRAUS DE CADA GRAFO\n");
+    int teste_2 = Verifica_arestas(G1,G2);
+
+    printf("\n>>>>GRAUS DE CADA VERTICE\n");
+    int teste_3 = Verifica_grau_vertices(G1,G2);
 
     printf("\n>>>DESCONEXO OU NAO\n");
-    Verfica_desconexo(G1,G2);
+    int teste_4 = Verfica_desconexo(G1,G2);
 
     printf("\n>>>EH LIVRE DE CIRCUITOS OU NAO\n");
-    Verfica_livre_de_circuitos(G1,G2);
+    int teste_5 = Verfica_livre_de_circuitos(G1,G2);
 
+    int total = teste_1 + teste_2 + teste_3 + teste_4 + teste_5;
+
+    if(total == 5){
+        printf("\n\n>>>>OS GRAFOS SAO ISOMORFOS<<<<<\n");
+        return 1;
+    }
+    printf("\n\n>>>>OS GRAFOS NAO SAO ISOMORFOS<<<<<\n");
+
+
+    printf("\n\n\n");
+    }
 }
