@@ -16,12 +16,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <conio.h>
+//#include <conio.h>
 #include <time.h>
 #include <locale.h>
 
 #define vertex int
-
+int *pre1;
 typedef struct no *link;
 typedef struct grafo *Grafo;
 
@@ -70,10 +70,8 @@ Grafo Gera_Grafo(int V){
     G->V = V;
     G->A = 0;
     G->adj = malloc(V*sizeof(link));
-
     for(vertex v = 0; v<V;v++)
         G->adj[v] = NULL;
-
     return G;
 }
 
@@ -134,6 +132,39 @@ Grafo Gera_Grafo_Random(int num_vertices){
 }
 
 /* Funções para teste de isormofismos em dois grafos */
+
+
+
+ void dfsR( Grafo G, vertex v, int *pre1){ 
+   int pre[G->V];
+   
+   int cnt=0;
+
+   pre[v] = cnt++; 
+   pre1[v] = cnt++;
+   for (link a = G->adj[v]; a != NULL; a = a->prox) {
+      vertex w = a->w;
+      //printf("%d\n",w);
+
+      if (pre1[w] == -1)
+         dfsR( G, w, pre1); 
+   }
+ }
+
+int *GRAPHdfs(Grafo G) 
+{ 
+   int cnt = 0;
+   pre1 = malloc(sizeof(G->V));
+   vertex v;
+   for (vertex v = 0; v < G->V; ++v) 
+      pre1[v] = -1;
+   //for (vertex v = 0; v < G->V; ++v)
+     // if (pre1[v] == -1) 
+    dfsR( G, v, pre1); // começa nova etapa
+    return pre1;    
+}
+
+
 
 /**
  * @brief      Verifica e compara o número de vértices de dois grafos.
@@ -245,54 +276,22 @@ int Verifica_grau_vertices(Grafo G1,Grafo G2){
  * return return 0 ou 1 com boleano para True e false, respectivamente.
  */
 int Verfica_desconexo(Grafo G1,Grafo G2){
-    int a;
-    int grau1[G1->V];
-    int grau2[G2->V];
-
-    int verific1;
-    int verific2;
-
-    for(vertex v = 0 ; v < G1->V ; v++) {
-        a=0;
-        for(link p = G1->adj[v]; p!=NULL; p = p-> prox)
-            a+=1;
-        grau1[v] = a;
-
+    int *vetor_grafo;
+    
+    vetor_grafo = GRAPHdfs(G1);
+    
+    for(vertex v = 0 ; v< G1->V; v++){
+        printf("%d\n",vetor_grafo[v]);
     }
 
-    for(vertex v = 0 ; v < G1->V ; v++){
-        a = 0;
-        for(link p = G2->adj[v]; p!=NULL; p = p-> prox)
-            a+=1;
-        grau2[v] = a;
-    }
+    setbuf(stdin,NULL);
+    fflush(stdin);
+    printf("\n");
 
-    for(int i = 0; i < G1->V; i++){
-        if(grau1[i] == 0)
-            verific1 = 1;
-        if(grau2[i] == 0)
-            verific2 = 1;
+    vetor_grafo = GRAPHdfs(G2);
+    for(vertex v = 0 ; v< G2->V; v++){
+        printf("%d\n",vetor_grafo[v]);
     }
-    for(int i = 0; i < G1->V; i++){
-        if((verific1 == 1)&&(verific2 == 1)){ 
-                printf("--Grafos são desconexos desconexo\n");
-                return 0;
-            }
-        if((verific1 == 1)||(verific2 == 1)){
-            if((verific1 == 1)){
-            printf("--GRAFO -> 1, eh desconexo\n");
-            return 0;
-            }
-            if((verific2 == 1)){
-            printf("--Grafo 2 eh desconexo\n");
-                return 0;
-            }
-        }
-        else{
-            printf("--Nenhum grafo eh desconexo\n");
-            return 1;
-        }
-      }
 }
 
 
@@ -339,18 +338,20 @@ int Verfica_livre_de_circuitos(Grafo G1,Grafo G2){
 
 
 int main(){
-    while(1){
+    //while(1){
     setlocale(LC_ALL, "portuguese");
 
     srand(time(NULL));
     
     struct grafo *G1,*G2;
-    G1 = Gera_Grafo_Random(rand()%5+1);
-    G2 = Gera_Grafo_Random(rand()%5+1);
+    G1 = Gera_Grafo_Random(5);
+    G2 = Gera_Grafo_Random(5);
+    
     
     printf("\n\n\n\n");
     printf("________________GRAFO -> 1________________________\n");
     Mostra_Grafo(G1);
+    /*
     printf("________________GRAFO -> 2________________________\n");
     Mostra_Grafo(G2);
 
@@ -362,22 +363,25 @@ int main(){
 
     printf("\n>>>>GRAUS DE CADA VERTICE\n");
     int teste_3 = Verifica_grau_vertices(G1,G2);
-
+    
     printf("\n>>>DESCONEXO OU NAO\n");
-    int teste_4 = Verfica_desconexo(G1,G2);
-
+    Verfica_desconexo(G1,G2);
+    
     printf("\n>>>EH LIVRE DE CIRCUITOS OU NAO\n");
     int teste_5 = Verfica_livre_de_circuitos(G1,G2);
 
-    int total = teste_1 + teste_2 + teste_3 + teste_4 + teste_5;
+    /*int total = teste_1 + teste_2 + teste_3 + teste_4 + teste_5;
 
     if(total == 5){
         printf("\n\n>>>>OS GRAFOS SAO ISOMORFOS<<<<<\n");
         return 1;
     }
     printf("\n\n>>>>OS GRAFOS NAO SAO ISOMORFOS<<<<<\n");
-
-
+    
     printf("\n\n\n");
-    }
+    */
+    GRAPHdfs(G1);
+    GRAPHdfs(G2);
+    Verfica_desconexo(G1,G2);
+    //}
 }
