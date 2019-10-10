@@ -1,16 +1,15 @@
 /*
 
-              UNIVERSIDADE FEDERAL DO CEARÁ  
-                     CAMPUS SOBRAL
-            CURSO DE ENGENHARIA DE COMPUTÇÃO
-                  ALGORITMOS E GRAFOS
-        
-                SAMUEL HERICLES - 389118
+                    UNIVERSIDADE FEDERAL DO CEARÁ  
+                            CAMPUS SOBRAL
+                  CURSO DE ENGENHARIA DE COMPUTÇÃO
+                        ALGORITMOS E GRAFOS
 
-    Objetivo -> Fazer um verificar de grafos isomorfos.
-    É preciso de pelo menos 5 testes para verificar se é
-    ou não isomorfos, caso positivo, um fazer um ultimo teste 
-    de força bruta.
+                      SAMUEL HERICLES - 389118
+
+    Objetivo -> Fazer um verificar de grafos isomorfos.É preciso de 
+    pelo menos 5 testes para verificar se é ou não isomorfos, caso
+    positivo, um fazer um ultimo teste de força bruta.
 
 */
 
@@ -128,6 +127,7 @@ Grafo Gera_Grafo_Random(int num_vertices,int teto){
 
 /* Funções para teste de isormofismos em dois grafos */
 
+/*          ->>>>>>>>>>>>>>>Busca em profundidade<<<<<<<<<<<<-         */
 int cnt;
 int pre[1000];
 int pre1[1000];
@@ -138,7 +138,7 @@ int BP_visit( Grafo G, vertex v, int *pre1){
       vertex w = a->w;
       if (pre[w] == -1)
          BP_visit( G, w,pre1); 
-   }
+    }
    return 1;
 }
 
@@ -154,6 +154,7 @@ int Busca_em_profundidade( Grafo G){
     }
     return a;
 }
+/*  ->>>>>>>>>>>>>>>Fim da busca em profundidade<<<<<<<<<<<<-          */
 
 /**
  * @brief      Verifica e compara o número de vértices de dois grafos.
