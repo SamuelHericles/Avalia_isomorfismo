@@ -5,7 +5,7 @@
             CURSO DE ENGENHARIA DE COMPUTÇÃO
                   ALGORITMOS E GRAFOS
         
-                SAMUEL HERICLES -389118
+                SAMUEL HERICLES - 389118
 
     Objetivo -> Fazer um verificar de grafos isomorfos.
     É preciso de pelo menos 5 testes para verificar se é
@@ -16,7 +16,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-//#include <conio.h>
 #include <time.h>
 #include <locale.h>
 
@@ -39,7 +38,6 @@ struct no{
 
 /* Funções para criação e exibição de um grafo aleatório */
 
-
 /**
  * @brief      Insere um novo nó aresta, diz qual o número 
  *             vértice e aponta para o próximo.
@@ -55,7 +53,6 @@ static link Novo_no(vertex w, link prox){
     a->prox = prox;
     return a;
 }
-
 
 /**
  * @brief      Gera um grafo sem aresta apenas os vértices.
@@ -108,7 +105,6 @@ void Mostra_Grafo(Grafo G){
     }
 }
 
-
 /**
  * @brief      Liga os vértices gerando um grafo aleatório
  *
@@ -116,7 +112,7 @@ void Mostra_Grafo(Grafo G){
  * 
  * return Ponteiro para o grafo na memória.
  */
-Grafo Gera_Grafo_Random(int num_vertices){
+Grafo Gera_Grafo_Random(int num_vertices,int teto){
     struct grafo *G;
     int prob;
     G = Gera_Grafo(num_vertices);
@@ -124,13 +120,40 @@ Grafo Gera_Grafo_Random(int num_vertices){
     for(int i = 0 ; i< G->V; i++){
         for(int j = 0; j<G->V; j++){
             prob = rand()%100;
-            if(i != j) if(prob > 70) Grafo_insere(G,i,j);
+            if(i != j) if( prob > teto) Grafo_insere(G,i,j);
         }
     }
     return G;
 }
 
 /* Funções para teste de isormofismos em dois grafos */
+
+int cnt;
+int pre[1000];
+int pre1[1000];
+
+int BP_visit( Grafo G, vertex v, int *pre1){ 
+   pre[v] = cnt++; 
+   for (link a = G->adj[v]; a != NULL; a = a->prox) {
+      vertex w = a->w;
+      if (pre[w] == -1)
+         BP_visit( G, w,pre1); 
+   }
+   return 1;
+}
+
+int Busca_em_profundidade( Grafo G){ 
+   cnt = 0;
+   int a = 0;
+   vertex v;
+    for(vertex v = 0; v < G->V; ++v) 
+      pre[v] = -1;
+    for (vertex v = 0; v < G->V; ++v){
+     if (pre[v] == -1)
+       a += BP_visit(G,v,pre1); // começa nova etapa
+    }
+    return a;
+}
 
 /**
  * @brief      Verifica e compara o número de vértices de dois grafos.
@@ -141,12 +164,12 @@ Grafo Gera_Grafo_Random(int num_vertices){
  * return return 0 ou 1 com boleano para True e false, respectivamente.
  */
 int Verifica_num_vertices(Grafo G1, Grafo G2){
-    printf("G1-> %d||G2-> %d\n",G1->V,G2->V);
+    //printf("G1-> %d||G2-> %d\n",G1->V,G2->V);
     if(G1->V == G2->V){
-        printf("--Possuem a mesma quantidade de vertices\n");
+        //printf("--Possuem a mesma quantidade de vertices\n");
         return 1;
     }
-    printf("--Nao possuem a mesma quantidade de vertices\n");
+    //printf("--Nao possuem a mesma quantidade de vertices\n");
     return 0;
 }
 
@@ -159,15 +182,14 @@ int Verifica_num_vertices(Grafo G1, Grafo G2){
  * return return 0 ou 1 com boleano para True e false, respectivamente.
  */
 int Verifica_arestas(Grafo G1, Grafo G2){
-    printf("G1-> %d||G2-> %d\n",G1->A,G2->A);
+    //printf("G1-> %d||G2-> %d\n",G1->A,G2->A);
     if(G1->A == G2->A){
-        printf("--Possuem a mesma quantidade de arestas\n");
+        //printf("--Possuem a mesma quantidade de arestas\n");
         return 1;
     }
-    printf("--Nao possuem a mesma quantidade de arestas\n");
+    //printf("--Nao possuem a mesma quantidade de arestas\n");
     return 0;
 }
-
 
 /**
  * @brief      Vérifica os graus de cada vértices de um grafos e 
@@ -192,7 +214,6 @@ int Verifica_grau_vertices(Grafo G1,Grafo G2){
     }
     a=0;
 
-        
     printf(" V-> Vertice\nG1-> Graus grafo 1\nG2-> Graus grafo 2\n");
     printf("__V____G1___G2_\n");
     for(vertex v = 0 ; v<G2->V; v++){
@@ -222,17 +243,16 @@ int Verifica_grau_vertices(Grafo G1,Grafo G2){
 
     for(int i = 0; i<G1->V;i++){
         if(grau1[i]!=-1){
-            printf("--Nao possuem os mesmos graus\n");
+            //printf("--Nao possuem os mesmos graus\n");
             return 0;
         }
     }
-    printf("\n--Possuem os mesmos graus\n");
+    //printf("\n--Possuem os mesmos graus\n");
     return 1;    
 }
 
 /**
- * @brief      Verifica se há vértices de grau  = 0 dando por se concluir 
- *             que esse tal vértice não possui aresta se conectando a outro.
+ * @brief      Verifica se os grafos são desconexos.
  *
  * @param      G1 Grafo para verificação.
  * @param      G2 Grafo para verificação.
@@ -245,57 +265,38 @@ int Verfica_desconexo(Grafo G1,Grafo G2){
     a = Busca_em_profundidade(G1);
     b = Busca_em_profundidade(G2);
 
-    if(a!=1) printf("O Grafo 1 eh desconexo\n");
-    else printf("O Grafo 1 nao eh desconexo\n");
+    //if(a!=1) printf("O Grafo 1 eh desconexo\n");
+    //else printf("O Grafo 1 nao eh desconexo\n");
 
-    if(b!=1) printf("O Grafo 2 eh desconexo\n");
-    else printf("O Grafo 2 nao eh desconexo\n");
+    //if(b!=1) printf("O Grafo 2 eh desconexo\n");
+    //else printf("O Grafo 2 nao eh desconexo\n");
 
     if(a!=b) return 0;
     else return 1;    
 
 }
 
+/**
+ * @brief      Conta a quantidade de componentes conexas e
+ *             avalia se são iguais ou não
+ *
+ * @param      G1 Grafo para verificação.
+ * @param      G2 Grafo para verificação.
+ * 
+ * return return 0 ou 1 com boleano para True e false, respectivamente.
+ */
 int Verifica_componetes_conexas(Grafo G1,Grafo G2){
     int a,b;
     
     a = Busca_em_profundidade(G1);
     b = Busca_em_profundidade(G2);
 
-    printf("O Grafo 1 tem %d componente(s) conexa(s)\n",a);
-    printf("O Grafo 2 tem %d componente(s) conexa(s)\n",b);
+    //printf("O Grafo 1 tem %d componente(s) conexa(s)\n",a);
+    //printf("O Grafo 2 tem %d componente(s) conexa(s)\n",b);
 
     if(a!=b) return 0;
     else return 1;
 }
-
-int cnt;
-int pre[1000];
-int pre1[1000];
-
-int BP_visit( Grafo G, vertex v, int *pre1){ 
-   pre[v] = cnt++; 
-   for (link a = G->adj[v]; a != NULL; a = a->prox) {
-      vertex w = a->w;
-      if (pre[w] == -1)
-         BP_visit( G, w,pre1); 
-   }
-   return 1;
-}
-
-int Busca_em_profundidade( Grafo G){ 
-   cnt = 0;
-   int a = 0;
-   vertex v;
-    for(vertex v = 0; v < G->V; ++v) 
-      pre[v] = -1;
-    for (vertex v = 0; v < G->V; ++v){
-     if (pre[v] == -1)
-       a += BP_visit(G,v,pre1); // começa nova etapa
-    }
-    return a;
-}
-
 
 /**
  * @brief      Verifica se há vértices de grau <= vertices - 1, de
@@ -317,46 +318,46 @@ int Verfica_livre_de_circuitos(Grafo G1,Grafo G2){
         verific2 = 1;
 
     if((verific1 == 1) && (verific2 == 1)){
-        printf("--Grafos livre de circuitos");
+        //printf("--Grafos livre de circuitos");
         return 1;
     }
 
     if((verific1 == 1) || (verific2 == 1)){
         if(verific1 == 1){
-            printf("--Grafo 1 eh livre de circuitos\n");
+            //printf("--Grafo 1 eh livre de circuitos\n");
             return 0;
         }
        if(verific2 == 1){
-            printf("--Grafo 2 eh livre de circuitos\n");
+            //printf("--Grafo 2 eh livre de circuitos\n");
             return 0;
         } 
     } 
     
     else {
-        printf("--Nenhum grafo eh livre de circuitos\n");
+        //printf("--Nenhum grafo eh livre de circuitos\n");
         return 0;
     }
 }
-
-
 
 int main(){
     setlocale(LC_ALL, "portuguese");
 
     srand(time(NULL));
-
-    struct grafo *G1,*G2;
-
-    G1 = Gera_Grafo_Random(5);
-    G2 = Gera_Grafo_Random(5);
     
-    printf("\n\n\n\n");
+    struct grafo *G1,*G2;
+    printf("\n\n"); 
+
+    /*
+    
+    G1 = Gera_Grafo_Random(rand()%100+1,p);
+    G2 = Gera_Grafo_Random(rand()%100+1,p);
+    
     printf("________________GRAFO -> 1________________________\n");
     Mostra_Grafo(G1);
     
     printf("________________GRAFO -> 2________________________\n");
     Mostra_Grafo(G2);
-
+    
     printf("\n>>>NUMERO DE VERTICES DE CADA GRAFO\n");
     int teste_1 = Verifica_num_vertices(G1,G2);
 
@@ -373,10 +374,8 @@ int main(){
     int teste_5 = Verfica_livre_de_circuitos(G1,G2);
 
     int total = teste_1 + teste_2 + teste_3 + teste_4 + teste_5;
-
     if(total == 5){
         printf("\n\n>>>>OS GRAFOS SAO ISOMORFOS<<<<<\n");
-        
         printf("\n>>>>FORCA BRUTA:GRAUS DE CADA VERTICE\n");
         Verifica_grau_vertices(G1,G2);
 
@@ -385,5 +384,114 @@ int main(){
     printf("\n\n>>>>OS GRAFOS NAO SAO ISOMORFOS<<<<<\n\n%d\n",total);
     
     printf("\n\n\n");
+    */
+    int p;
+    int a = 0;
+    int i;
+
+    clock_t seconds1 ;
+    clock_t seconds2 ;
+    clock_t seconds3 ;
+    clock_t seconds4 ;
+    clock_t seconds5 ;
+    clock_t seconds6 ;
+
+    seconds1 = clock();
+
+    for(i = 0; i< 100 ; i++){
+        p = 25;
+        G1 = Gera_Grafo_Random(rand()%100+1,p);
+        G2 = Gera_Grafo_Random(rand()%100+1,p);
+        
+        //printf("\n\n\n\n");
+        int teste_1 = Verifica_num_vertices(G1,G2);
+        int teste_2 = Verifica_arestas(G1,G2);
+        int teste_3 = Verfica_desconexo(G1,G2);
+        int teste_4 = Verifica_componetes_conexas(G1,G2);    
+        int teste_5 = Verfica_livre_de_circuitos(G1,G2);
+
+        int total = teste_1 + teste_2 + teste_3 + teste_4 + teste_5;
+        if(total == 5){
+            printf("\n\n>>>>OS GRAFOS SAO ISOMORFOS<<<<<\n");
+            printf("\n>>>>FORCA BRUTA:GRAUS DE CADA VERTICE\n");
+            Verifica_grau_vertices(G1,G2);
+            a+=1;
+        }
+        //printf("\n\n>>>>OS GRAFOS NAO SAO ISOMORFOS<<<<<\n\n%d\n",total);    
+    }
+
+    seconds2 = clock();
+
+    double tempo = (seconds2-seconds1)*1000.0/CLOCKS_PER_SEC;
+
+    printf("\n___Grafos com %d%% de inserção____\n",p);
+    printf("%.2f ms",tempo);
+    printf("\n%d grafos isomorfos\n",a*2);
+
+    seconds3 = clock();
+    a = 0;
+    for(i = 0; i< 100 ; i++){
+        p = 50;
+        G1 = Gera_Grafo_Random(rand()%100+1,p);
+        G2 = Gera_Grafo_Random(rand()%100+1,p);
+        
+        //printf("\n\n\n\n");
+        int teste_1 = Verifica_num_vertices(G1,G2);
+        int teste_2 = Verifica_arestas(G1,G2);
+        int teste_3 = Verfica_desconexo(G1,G2);
+        int teste_4 = Verifica_componetes_conexas(G1,G2);    
+        int teste_5 = Verfica_livre_de_circuitos(G1,G2);
+
+        int total = teste_1 + teste_2 + teste_3 + teste_4 + teste_5;
+        if(total == 5){
+            printf("\n\n>>>>OS GRAFOS SAO ISOMORFOS<<<<<\n");
+            printf("\n>>>>FORCA BRUTA:GRAUS DE CADA VERTICE\n");
+            Verifica_grau_vertices(G1,G2);
+            a+=1;
+        }
+        //printf("\n\n>>>>OS GRAFOS NAO SAO ISOMORFOS<<<<<\n\n%d\n",total);
+    }
+
+    seconds4 = clock();
+
+    double tempo2 = (seconds4-seconds3)*1000.0/CLOCKS_PER_SEC;
     
+    printf("\n___Grafos com %d%% de inserção____\n",p);
+    printf("%.2f ms",tempo2);
+    printf("\n%d grafos isomorfos\n",a*2);
+    
+
+    seconds5 = clock();
+    a=0;
+    for(i = 0; i< 100 ; i++){
+        p = 75;
+        G1 = Gera_Grafo_Random(rand()%100+1,p);
+        G2 = Gera_Grafo_Random(rand()%100+1,p);
+        
+        //printf("\n\n\n\n");
+        int teste_1 = Verifica_num_vertices(G1,G2);
+        int teste_2 = Verifica_arestas(G1,G2);
+        int teste_3 = Verfica_desconexo(G1,G2);
+        int teste_4 = Verifica_componetes_conexas(G1,G2);    
+        int teste_5 = Verfica_livre_de_circuitos(G1,G2);
+
+        int total = teste_1 + teste_2 + teste_3 + teste_4 + teste_5;
+        if(total == 5){
+            printf("\n\n>>>>OS GRAFOS SAO ISOMORFOS<<<<<\n");
+            printf("\n>>>>FORCA BRUTA:GRAUS DE CADA VERTICE\n");
+            Verifica_grau_vertices(G1,G2);
+            a+=1;
+        }
+        //printf("\n\n>>>>OS GRAFOS NAO SAO ISOMORFOS<<<<<\n\n%d\n",total);
+    
+    }
+    seconds6 = clock();
+
+    double tempo3 = (seconds6-seconds5)*1000.0/CLOCKS_PER_SEC;
+    
+    printf("\n___Grafos com %d%% de inserção____\n",p);
+    printf("%.2f ms",tempo3);
+    printf("\n%d grafos isomorfos\n\n\n",a*2);
+
+
 }
