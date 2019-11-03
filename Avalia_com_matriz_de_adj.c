@@ -1,14 +1,43 @@
+/*
+
+                    UNIVERSIDADE FEDERAL DO CEARÁ  
+                            CAMPUS SOBRAL
+                  CURSO DE ENGENHARIA DE COMPUTÇÃO
+                        ALGORITMOS E GRAFOS
+
+                      SAMUEL HERICLES - 389118
+
+    Objetivo -> Fazer um verificar de grafos isomorfos.É preciso de 
+    pelo menos 5 testes para verificar se é ou não isomorfos, caso
+    positivo, um fazer um ultimo teste de força bruta.
+
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
+/* Estrutura para represetação do grafo */ 
 typedef struct Grafo *grafo;
 
+/* Estrutura para conexão e contagem dos vértices na matriz de adjacência */
 struct Grafo{
     int tamanho;
     int *adjMatrix;
 };
 
+/* Funções para criação e exibição de um grafo aleatório */
+
+
+/**
+ * @brief      Pecorre um vetor 'matriz' de adjacência
+ *
+ * @param[in]   i   número da coluna
+ * @param[in]   j   número da linha
+ * @param[in]   n   tamanho da matriz quadrada
+ * 
+ * return Posicao da célula na 'matriz' de adj
+ */
 int getIndex(int i, int j, int n){
         if(i<j)
             return (2*n-i-1)*i/2+(j-i)-1;
@@ -16,16 +45,40 @@ int getIndex(int i, int j, int n){
             return (2*n-j-1)*j/2+(i-j)-1;
 }
 
+/**
+ * @brief      verifica uma valor em uma célula da matriz
+ *             para representar a inserção de dois vértices.
+ *
+ * @param[in]   i   número da coluna
+ * @param[in]   j   número da linha
+ * @param[in]   g   struct do grafo
+ * 
+ * return valor na célula do vetor 'matriz' de adj
+ */
 int edge(int i, int j, grafo g){
     return g->adjMatrix[getIndex(i, j, g->tamanho)];
 }
 
+/**
+ * @brief      Define um valor para conectar ou apagar 
+ *             dois vértices.
+ *
+ * @param[in]   valor   valor para inserir na matriz de adjacência
+ * @param[in]   j       número da linha
+ * @param[in]   g       struct do grafo
+ * 
+ */
 void setEdge(int valor, int i, int j, grafo g){
     g->adjMatrix[getIndex(i, j, g->tamanho)] = valor; 
 }
 
 
 
+/**
+ * @brief      Exibe o grafo em lista de adjacência
+ *
+ * @param  g   Grafo a ser exibido.
+ */
 void mostraGrafo(grafo g){
     printf("\n");
     for( int i = 0; i < g->tamanho ; i++){
@@ -38,6 +91,12 @@ void mostraGrafo(grafo g){
     printf("\n");
 }
 
+/**
+ * @brief      Exibe o grafo em lista de adjacência
+ *
+ * @param  g1   Grafo a ser exibido.
+ * @param  g2   Grafo a ser exibido.
+ */
 void mostra_dois_grafo(grafo g1,grafo g2){
 
     printf(" Grafo 1\n");
@@ -47,6 +106,14 @@ void mostra_dois_grafo(grafo g1,grafo g2){
 
 }
 
+/**
+ * @brief      Criação do grafo aleatoriamente
+ *
+ * @param  n    número de vértices do grafo.
+ * @param  p    probabilidade de inserção de cada aresta.
+ * 
+ * return  retorna o grafo criado inserido arestas aleatoriamente
+ */
 grafo criaGrafo(int n,int p){
     grafo g = malloc(sizeof(grafo));
     g->tamanho = n;
@@ -61,7 +128,13 @@ grafo criaGrafo(int n,int p){
     return g;
 }
 
-
+/**
+ * @brief      Mede e exibe o tempo de cálculo das verificações 
+ *             para isormofismo.
+ *
+ * @param  t_ini Tempo inicial do ciclo de repeticação
+ * @param  t_ini Tempo fim do ciclo de repeticação
+ */
 void Exibe_tempo(clock_t t_ini, clock_t t_fim){
 
     double tempo = (t_fim-t_ini)*1000.0/CLOCKS_PER_SEC;
@@ -69,8 +142,17 @@ void Exibe_tempo(clock_t t_ini, clock_t t_fim){
 
 }
 
-////////////////////////////////////////////////////////////////////////
+//                      BUSCA EM PROFUNDADE
 
+/**
+ * @brief      visita e marca os vértices da estrutura do grafo
+ *
+ * @param  g         estrutura de grafo para ser visitado so vértice
+ * @param  vertice   ponteiro para o vetor vértice que a função
+ *                   'Busca_em_profundidade' busca
+ *
+ * @param  i         posição do vetor 'vertice' a ser visitada
+ */
 void BP_visit(grafo g,int *vertice, int i){ 
     vertice[i] = -1;
     for(int j = 0; j < g->tamanho; j++){
@@ -83,6 +165,14 @@ void BP_visit(grafo g,int *vertice, int i){
     vertice[i] = 1;
 }
 
+/**
+ * @brief      algoritmo de busca em profundiade modificado para contar
+ *             o número de componentes conexas
+ *
+ * @param  g   estrutura de grafo para ser visitado os vértice
+ * 
+ * return  a   número de componentes conexas
+ */
 int Busca_em_profundidade(grafo g){ 
    //-1 cinza
    // 0 branco
@@ -98,7 +188,8 @@ int Busca_em_profundidade(grafo g){
            a++;
            BP_visit(g,vertices,i);
        }
-       /*
+       /*    EXIBIR PASSO A PASSO DO ALGORITMO 
+
         printf("\n%d entrada(s) no BP_visit\n",a);
         printf("\nVertices->");
         for(int i = 0; i < g->tamanho ; i++)
@@ -108,6 +199,7 @@ int Busca_em_profundidade(grafo g){
         for(int i = 0; i < g->tamanho ; i++)
                 printf(" |%2d | ",vertices[i]);
         printf("\n\n");
+       
         */
 
     }
@@ -116,8 +208,15 @@ int Busca_em_profundidade(grafo g){
     
 }
 
-////////////////////////////////////////////////////////////////////////
-
+/**
+ * @brief      verificar se o numero de vértices são iguais para
+ *             os dois grafos
+ *
+ * @param  g1   estrutura do grafo 1 
+ * @param  g2   estrutura do grafo 2 
+ *
+ * return  '0' se for igual e '1' se for diferente
+ */
 int Verifica_num_vertices(grafo g1, grafo g2){
     //printf("\n%d||%d",g1->tamanho,g2->tamanho);
     if(g1->tamanho == g2->tamanho)
@@ -125,6 +224,15 @@ int Verifica_num_vertices(grafo g1, grafo g2){
     return 1;
 }
 
+/**
+ * @brief      verificar se o numero de arestas são iguais para
+ *             os dois grafos
+ *
+ * @param  g1   estrutura do grafo 1 
+ * @param  g2   estrutura do grafo 2 
+ *
+ * return  '0' se for igual e '1' se for diferente
+ */
 int Verifica_num_arestas(grafo g1, grafo g2){
     int a=0;
     int b=0;
@@ -148,6 +256,15 @@ int Verifica_num_arestas(grafo g1, grafo g2){
 
 }
 
+/**
+ * @brief   verificar se o numero de vértices de mesmo 
+ *          são iguais para os dois grafos
+ *
+ * @param  g1   estrutura do grafo 1 
+ * @param  g2   estrutura do grafo 2 
+ *
+ * return  '0' se for igual e '1' se for diferente
+ */
 int Verifica_vertices_de_mesmo_grau(grafo g1, grafo g2){
  int *temp1, *temp2, i, j,aux;
  temp1 = malloc(g1->tamanho*sizeof(int));
@@ -180,6 +297,14 @@ int Verifica_vertices_de_mesmo_grau(grafo g1, grafo g2){
     return 0;
 }
 
+/**
+ * @brief   verificar um dos grafos são desconexos
+ *
+ * @param  g1   estrutura do grafo 1 
+ * @param  g2   estrutura do grafo 2 
+ *
+ * return  '0' se for igual e '1' se for diferente
+ */
 int Verifica_desconexo(grafo g1, grafo g2){
     int grafo1 = Busca_em_profundidade(g1);
     int grafo2 = Busca_em_profundidade(g2);
@@ -194,6 +319,15 @@ int Verifica_desconexo(grafo g1, grafo g2){
     } 
 }
 
+/**
+ * @brief   verificar a quantidade componentes conexas de
+ *          cada grafo.
+ *
+ * @param  g1   estrutura do grafo 1 
+ * @param  g2   estrutura do grafo 2 
+ *
+ * return  '0' se for igual e '1' se for diferente
+ */
 int Verifica_comp_desconexas(grafo g1, grafo g2){
 
     int grafo1 = Busca_em_profundidade(g1);
@@ -207,6 +341,15 @@ int Verifica_comp_desconexas(grafo g1, grafo g2){
     } 
 }
 
+
+/**
+ * @brief   verificar se todos os testes acima resultada em '0'
+ *
+ * @param  g1   estrutura do grafo 1 
+ * @param  g2   estrutura do grafo 2 
+ *
+ * return  quantidade testes que passaram
+ */
 int Verifica_isomorfismo(grafo g1, grafo g2){
     int a = 0, b = 0, c = 0, d = 0 ,e = 0;
     int aux = 0;

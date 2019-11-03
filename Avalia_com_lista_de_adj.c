@@ -410,7 +410,6 @@ int main(){
         int teste_3 = Verfica_desconexo(G1,G2);
         int teste_4 = Verifica_componetes_conexas(G1,G2);    
         int teste_5 = Verfica_livre_de_circuitos(G1,G2);
-
         int total = teste_1 + teste_2 + teste_3 + teste_4 + teste_5;
         if(total == 5){
             printf("\n\n>>>>OS GRAFOS SAO ISOMORFOS<<<<<\n");
