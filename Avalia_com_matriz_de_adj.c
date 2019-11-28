@@ -135,14 +135,73 @@ grafo criaGrafo(int n,int p){
  * @param  t_ini Tempo inicial do ciclo de repeticação
  * @param  t_ini Tempo fim do ciclo de repeticação
  */
-void Exibe_tempo(clock_t t_ini, clock_t t_fim){
+double Exibe_tempo(clock_t t_ini, clock_t t_fim){
 
     double tempo = (t_fim-t_ini)*1000.0/CLOCKS_PER_SEC;
-    printf("\tTempo total de compilacao: %.2f ms\n",tempo);
+    //printf("\tTempo total de compilacao: %.2f ms\n",tempo);
+    return tempo;
 
 }
 
 //                      BUSCA EM PROFUNDADE
+
+/**
+ * @brief      visita e marca os vértices da estrutura do grafo
+ *
+ * @param  g      struct do grafo
+ * @param  cor    endereço do vetor de cor
+ * @param  pais   endereço do vetor que armazena a descendência ao vértice raiz
+ * @param  i      vetor a ser analisado seu caminho      
+ * @param  aux    endenreço do vetor auxiliar para o vetor pai
+ *   
+ */
+void bpVisit2(grafo g, int *cor, int *pais, int i, int *aux){
+ int j;
+ cor[i]=-1; 
+ for(j=0;j<g->tamanho;j++){
+  if(i!=j){
+   if(edge(i,j,g)==1){
+       if(cor[j]==-1){
+        if(pais[i]!=j){
+         *aux=1;
+     }
+    }else if(cor[j]==0){
+        pais[j] = i;
+        bpVisit2(g, cor, pais, j, aux);
+    }
+   }
+  }
+ }
+ cor[i] = 1;
+}
+
+/**
+ * @brief        Algortimo de busca em profundidade para armazenar os pais com o intuito de 
+ *               descobrir se o grafo possui circuito
+ *
+ * @param  g     estrutura de grafo para ser visitado so vértice
+ *
+ *
+ * return bool 1 para caso não tiver circuito e 0 para caso tiver circuito.
+ */
+int Busca_em_profundidade_para_pai(grafo g) {
+ int cor[g->tamanho];
+ int pais[g->tamanho];
+ int aux = 0;
+ int circuito = 0;
+ int i,j = 0;
+
+ for(i=0;i<g->tamanho;i++){
+     cor[i] = 0; 
+     pais[i] = -1;
+ }  
+ for(i=0;i<g->tamanho;i++){
+     bpVisit2(g, cor, pais, i, &aux);
+     if(aux==1){
+      return 1;//quando tem circuito
+     }
+ }return 0; // quando n tem circuito
+}
 
 /**
  * @brief      visita e marca os vértices da estrutura do grafo
@@ -206,6 +265,15 @@ int Busca_em_profundidade(grafo g){
 
     return a;
     
+}
+
+
+int Verifica_circuito(grafo g1, grafo g2){
+    if(Busca_em_profundidade_para_pai(g1) != Busca_em_profundidade_para_pai(g2))
+        return 1;
+    else
+        return 0; 
+
 }
 
 /**
@@ -341,7 +409,6 @@ int Verifica_comp_desconexas(grafo g1, grafo g2){
     } 
 }
 
-
 /**
  * @brief   verificar se todos os testes acima resultada em '0'
  *
@@ -351,7 +418,7 @@ int Verifica_comp_desconexas(grafo g1, grafo g2){
  * return  quantidade testes que passaram
  */
 int Verifica_isomorfismo(grafo g1, grafo g2){
-    int a = 0, b = 0, c = 0, d = 0 ,e = 0;
+    int a = 0, b = 0, c = 0, d = 0 ,e = 0,f = 0 ;
     int aux = 0;
     //printf("\n1.Num de vertices-> ");
     a = Verifica_num_vertices(g1,g2);
@@ -368,7 +435,10 @@ int Verifica_isomorfismo(grafo g1, grafo g2){
     //printf("\n5.Qtd->\n");
     e = Verifica_vertices_de_mesmo_grau(g1,g2);
 
-    if((a+b+c+d+e) == 0){
+    //printf("\n6. Se há ou não circuitos->\n");
+    f = Verifica_circuito(g1,g2);
+
+    if((a+b+c+d+e+f) == 0){
         aux++;
     }
     //else
@@ -380,56 +450,194 @@ int Verifica_isomorfismo(grafo g1, grafo g2){
 int main(){
     srand(time(NULL));
     struct Grafo *g1,*g2;
-    int qt;
+    int qt = 0 ;
     clock_t t_ini;
     clock_t t_fim;
+    double  tempo = 0, tempo_aux = 0, tempo_medio = 0 ;
+
+    //###########################################################################################
 
     //Testes
-    
+
+    printf(">>>>>>>>8 vertices\n");
     //  25%
-    t_ini = clock();
-    printf("Com 25%% de probabilidade de insercao:\n");
+    printf("\nCom 25%% de probabilidade de insercao:\n");
     for(int i = 1; i <= 100; i++){
-        g1 = criaGrafo(rand()%15+1,25);
-        g2 = criaGrafo(rand()%15+1,25);
-        //printf("%d->",i);
+        t_ini = clock();
+        g1 = criaGrafo(8,25);
+        g2 = criaGrafo(8,25);
         qt += Verifica_isomorfismo(g1,g2);
-
+        t_fim = clock();
+        tempo += Exibe_tempo(t_ini,t_fim);
     }
-    if(qt!=0) printf("\t%d grafos isomorfos\n");
-    t_fim = clock();
-    Exibe_tempo(t_ini,t_fim);
+    tempo_medio = tempo / 100.0;
+    printf("Tempo médio: %lf ms\n",tempo_medio);
+
+    if(qt!=0) printf("\tHá possiveís %d grafos isomorfos\n",qt);
+    else printf("\tNenhum grafo isomorfo\n");
 
     printf("\n");
-    
+    qt = 0;
+
     //  50%
-    t_ini = clock();
-    printf("Com 50%% de probabilidade de insercao:\n");    
+    printf("\nCom 50%% de probabilidade de insercao:\n");    
     for(int i = 1; i <= 100; i++){
-        g1 = criaGrafo(rand()%15+1,50);
-        g2 = criaGrafo(rand()%15+1,50);
-        //printf("%d->",i);
+        t_ini = clock();
+        g1 = criaGrafo(8,50);
+        g2 = criaGrafo(8,50);
         qt += Verifica_isomorfismo(g1,g2);
+        t_fim = clock();
+        tempo += Exibe_tempo(t_ini,t_fim);
     }
-    if(qt!=0) printf("\t%d grafos isomorfos\n");
-    t_fim = clock();
-    Exibe_tempo(t_ini,t_fim);    
+
+    tempo_medio = tempo / 100.0;
+    printf("Tempo médio: %lf ms\n",tempo_medio);
+
+    if(qt!=0) printf("\tHá possiveís %d grafos isomorfos\n",qt);
+    else printf("\tNenhum grafo isomorfo\n");
+
     printf("\n");
+    qt = 0;
 
     //  75%
-    t_ini = clock();
-    printf("Com 75%% de probabilidade de insercao:\n");    
+    printf("\nCom 75%% de probabilidade de insercao:\n");    
     for(int i = 1; i <= 100; i++){
-        g1 = criaGrafo(rand()%15+1,75);
-        g2 = criaGrafo(rand()%15+1,75);
-        //printf("%d->",i);
+        t_ini = clock();
+        g1 = criaGrafo(8,75);
+        g2 = criaGrafo(8,75);
         qt += Verifica_isomorfismo(g1,g2);
+        t_fim = clock();
+        tempo += Exibe_tempo(t_ini,t_fim);   
+
     }
-    if(qt!=0) printf("\t%d grafos isomorfos\n");
-    t_fim = clock();
-    Exibe_tempo(t_ini,t_fim);   
-     
+    tempo_medio = tempo / 100.0;
+    printf("Tempo médio: %lf ms\n",tempo_medio);
+    if(qt!=0) printf("\tHá possiveís %d grafos isomorfos\n",qt); 
+    else printf("\tNenhum grafo isomorfo\n");
+
     printf("\n");
+
+    //###########################################################################################
+
+    printf(">>>>>>>>12 vertices\n");
+    //  25%
+    printf("\nCom 25%% de probabilidade de insercao:\n");
+    for(int i = 1; i <= 100; i++){
+        t_ini = clock();
+        g1 = criaGrafo(12,25);
+        g2 = criaGrafo(12,25);
+        qt += Verifica_isomorfismo(g1,g2);
+        t_fim = clock();
+        tempo += Exibe_tempo(t_ini,t_fim);
+    }
+    tempo_medio = tempo / 100.0;
+    printf("Tempo médio: %lf ms\n",tempo_medio);
+
+    if(qt!=0) printf("\tHá possiveís %d grafos isomorfos\n",qt);
+    else printf("\tNenhum grafo isomorfo\n");
+
+    printf("\n");
+    qt = 0;
+
+    //  50%
+    printf("\nCom 50%% de probabilidade de insercao:\n");    
+    for(int i = 1; i <= 100; i++){
+        t_ini = clock();
+        g1 = criaGrafo(12,50);
+        g2 = criaGrafo(12,50);
+        qt += Verifica_isomorfismo(g1,g2);
+        t_fim = clock();
+        tempo += Exibe_tempo(t_ini,t_fim);
+    }
+
+    tempo_medio = tempo / 100.0;
+    printf("Tempo médio: %lf ms\n",tempo_medio);
+
+    if(qt!=0) printf("\tHá possiveís %d grafos isomorfos\n",qt);
+    else printf("\tNenhum grafo isomorfo\n");
+
+    printf("\n");
+    qt = 0;
+
+    //  75%
+    printf("\nCom 75%% de probabilidade de insercao:\n");    
+    for(int i = 1; i <= 100; i++){
+        t_ini = clock();
+        g1 = criaGrafo(12,75);
+        g2 = criaGrafo(12,75);
+        qt += Verifica_isomorfismo(g1,g2);
+        t_fim = clock();
+        tempo += Exibe_tempo(t_ini,t_fim);   
+
+    }
+    tempo_medio = tempo / 100.0;
+    printf("Tempo médio: %lf ms\n",tempo_medio);
+    if(qt!=0) printf("\tHá possiveís %d grafos isomorfos\n",qt); 
+    else printf("\tNenhum grafo isomorfo\n");
+
+    printf("\n");
+
+    //###########################################################################################
+
+    printf(">>>>>>>>16 vertices\n");
+    //  25%
+    printf("\nCom 25%% de probabilidade de insercao:\n");
+    for(int i = 1; i <= 100; i++){
+        t_ini = clock();
+        g1 = criaGrafo(16,25);
+        g2 = criaGrafo(16,25);
+        qt += Verifica_isomorfismo(g1,g2);
+        t_fim = clock();
+        tempo += Exibe_tempo(t_ini,t_fim);
+    }
+    tempo_medio = tempo / 100.0;
+    printf("Tempo médio: %lf ms\n",tempo_medio);
+
+    if(qt!=0) printf("\tHá possiveís %d grafos isomorfos\n",qt);
+    else printf("\tNenhum grafo isomorfo\n");
+
+    printf("\n");
+    qt = 0;
+
+    //  50%
+    printf("\nCom 50%% de probabilidade de insercao:\n");    
+    for(int i = 1; i <= 100; i++){
+        t_ini = clock();
+        g1 = criaGrafo(16,50);
+        g2 = criaGrafo(16,50);
+        qt += Verifica_isomorfismo(g1,g2);
+        t_fim = clock();
+        tempo += Exibe_tempo(t_ini,t_fim);
+    }
+
+    tempo_medio = tempo / 100.0;
+    printf("Tempo médio: %lf ms\n",tempo_medio);
+
+    if(qt!=0) printf("\tHá possiveís %d grafos isomorfos\n",qt);
+    else printf("\tNenhum grafo isomorfo\n");
+
+    printf("\n");
+    qt = 0;
+
+    //  75%
+    printf("\nCom 75%% de probabilidade de insercao:\n");    
+    for(int i = 1; i <= 100; i++){
+        t_ini = clock();
+        g1 = criaGrafo(16,75);
+        g2 = criaGrafo(16,75);
+        qt += Verifica_isomorfismo(g1,g2);
+        t_fim = clock();
+        tempo += Exibe_tempo(t_ini,t_fim);   
+
+    }
+    tempo_medio = tempo / 100.0;
+    printf("Tempo médio: %lf ms\n",tempo_medio);
+    if(qt!=0) printf("\tHá possiveís %d grafos isomorfos\n",qt); 
+    else printf("\tNenhum grafo isomorfo\n");
+
+    printf("\n");
+
+
 
     
 }
