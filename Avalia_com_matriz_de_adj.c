@@ -7,9 +7,8 @@
 
                       SAMUEL HERICLES - 389118
 
-    Objetivo -> Fazer um verificar de grafos isomorfos.É preciso de 
-    pelo menos 5 testes para verificar se é ou não isomorfos, caso
-    positivo, um fazer um ultimo teste de força bruta.
+    Objetivo -> Fazer um verificador de grafos isomorfos.É preciso de 
+    pelo menos 5 testes para verificar se é ou não isomorfo.
 
 */
 
@@ -26,7 +25,7 @@ struct Grafo{
     int *adjMatrix;
 };
 
-/* Funções para criação e exibição de um grafo aleatório */
+            /* Funções para criação e exibição de um grafo aleatório */
 
 
 /**
@@ -142,9 +141,11 @@ double Exibe_tempo(clock_t t_ini, clock_t t_fim){
     return tempo;
 
 }
-
-//                      BUSCA EM PROFUNDADE
-
+/*
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+||||||||||||||||||||||| BUSCA EM PROFUNDADE ||||||||||||||||||||||||
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+*/
 /**
  * @brief      visita e marca os vértices da estrutura do grafo
  *
@@ -268,6 +269,20 @@ int Busca_em_profundidade(grafo g){
 }
 
 
+/*
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+||||||||||||||||||||||| FUNÇÕES DE VERIFICIAÇÃO|||||||||||||||||||||
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+*/
+
+/**
+ * @brief      Verificar se há circuitos no grafos
+ *
+ * @param  g1   estrutura do grafo 1 
+ * @param  g2   estrutura do grafo 2 
+ * 
+ * return  '0' se for igual e '1' se for diferente
+ */
 int Verifica_circuito(grafo g1, grafo g2){
     if(Busca_em_profundidade_para_pai(g1) != Busca_em_profundidade_para_pai(g2))
         return 1;
@@ -446,6 +461,11 @@ int Verifica_isomorfismo(grafo g1, grafo g2){
     return aux;
 }
 
+/*
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+||||||||||||||||||||||| FUNÇÃO PRINCIPAL||||||||||||||||||||||||||||
+||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
+*/
 
 int main(){
     srand(time(NULL));
@@ -455,11 +475,11 @@ int main(){
     clock_t t_fim;
     double  tempo = 0, tempo_aux = 0, tempo_medio = 0 ;
 
-    //###########################################################################################
-
     //Testes
 
-    printf(">>>>>>>>8 vertices\n");
+    printf("\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+    printf("\n|||||||||||||||||||||||||||| 8 VÉRTICES ||||||||||||||||||||||||||||");
+    printf("\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n");
     //  25%
     printf("\nCom 25%% de probabilidade de insercao:\n");
     for(int i = 1; i <= 100; i++){
@@ -517,9 +537,10 @@ int main(){
 
     printf("\n");
 
-    //###########################################################################################
+    printf("\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+    printf("\n|||||||||||||||||||||||||||| 12 VÉRTICES |||||||||||||||||||||||||||");
+    printf("\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n"); 
 
-    printf(">>>>>>>>12 vertices\n");
     //  25%
     printf("\nCom 25%% de probabilidade de insercao:\n");
     for(int i = 1; i <= 100; i++){
@@ -577,9 +598,10 @@ int main(){
 
     printf("\n");
 
-    //###########################################################################################
-
-    printf(">>>>>>>>16 vertices\n");
+    printf("\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||");
+    printf("\n|||||||||||||||||||||||||||| 16 VÉRTICES |||||||||||||||||||||||||||");
+    printf("\n||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||\n");
+    
     //  25%
     printf("\nCom 25%% de probabilidade de insercao:\n");
     for(int i = 1; i <= 100; i++){
