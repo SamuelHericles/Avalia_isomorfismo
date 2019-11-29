@@ -436,16 +436,16 @@ int Verifica_isomorfismo(grafo g1, grafo g2){
     int a = 0, b = 0, c = 0, d = 0 ,e = 0,f = 0 ;
     int aux = 0;
     //printf("\n1.Num de vertices-> ");
-    a = Verifica_num_vertices(g1,g2);
+    a = Verifica_num_arestas(g1,g2);
 
     //printf("\n2.Num de arestas -> ");
-    b = Verifica_num_arestas(g1,g2);
+    b = Verifica_num_vertices(g1,g2);
 
     //printf("\n3.Desconexos-> ");
-    c = Verifica_desconexo(g1,g2);
+    c = Verifica_comp_desconexas(g1,g2);
 
     //printf("\n4.Qt de comp desconexas-> ");
-    d = Verifica_comp_desconexas(g1,g2);
+    d = Verifica_desconexo(g1,g2);
 
     //printf("\n5.Qtd->\n");
     e = Verifica_vertices_de_mesmo_grau(g1,g2);
