@@ -15,7 +15,7 @@ caso esteja usando algum SO derivado de Linux. Além disso, caso queria que limp
 
        clear && gcc Avalia_com_matriz_de_adj.c -o trb && ./trb
 
-# Licensa
+# Licença
 
 Código aberto,pois é apenas para fins educacionais.
 
